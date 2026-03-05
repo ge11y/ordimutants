@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ordi Mutants — Mutate or Burn</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ancient: {
+              black: '#0a0908',
+              dark: '#1a1614',
+              blood: '#4a1c1c',
+              rust: '#8b4513',
+              bone: '#d4c5a9',
+              moss: '#3d4a2d',
+            },
+            cult: {
+              orange: '#ff6b00',
+              darkorange: '#cc4400',
+              neonorange: '#ff9500',
+              acid: '#39ff14',
+              fire: '#ff3300',
+              serum: '#00ff88',
+            }
+          },
+          fontFamily: {
+            runic: ['Cinzel Decorative', 'Uncial Antiqua', 'Papyrus', 'fantasy', 'serif'],
+            ancient: ['Cinzel', 'Cormorant Garamond', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;700&family=Cormorant+Garamond:wght@400;500;600&display=swap');
+    
+    :root {
+      --ancient-black: #0a0908;
+      --ancient-dark: #0d0d0d;
+      --cult-orange: #ff6b00;
+      --cult-darkorange: #cc4400;
+      --cult-neonorange: #ff9500;
+    }
+    
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--cult-orange) var(--ancient-black);
+    }
+    
+    body {
+      background-color: var(--ancient-black);
+      color: var(--cult-orange);
+      font-family: 'Rajdhani', 'Orbitron', sans-serif;
+    }
+    
+    /* Fixed Background */
+    .fixed-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background-image: url('background.jpg');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.08;
+    }
+    
+    /* Sharp Sci-Fi Font Style */
+    .runic-title {
+      font-family: 'Rajdhani', 'Orbitron', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-size: 1.5rem;
+    }
+    
+    /* Texture overlay */
+    .texture-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      pointer-events: none;
+    }
+    
+    /* Sticky Header with ORDI MUTANTS */
+    .sticky-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: linear-gradient(to bottom, rgba(10,9,8,0.98), rgba(10,9,8,0.85));
+      border-bottom: 1px solid rgba(155,48,255,0.4);
+      backdrop-filter: blur(10px);
+    }
+    
+    .runic-text {
+      font-family: 'Metal Mania', 'Metamorphous', cursive;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    
+    .ancient-text {
+      font-family: 'Metal Mania', 'Metamorphous', cursive;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    
+    /* Purple Neon Button Styles */
+    .cult-btn {
+      background: linear-gradient(135deg, var(--ancient-dark), var(--ancient-black));
+      border: 2px solid var(--cult-orange);
+      color: var(--cult-orange);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      font-family: 'Rajdhani', 'Orbitron', sans-serif;
+    }
+    
+    .cult-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(155,48,255,0.3), transparent);
+      transition: 0.5s;
+    }
+    
+    .cult-btn:hover::before {
+      left: 100%;
+    }
+    
+    .cult-btn:hover {
+      background: var(--cult-orange);
+      color: var(--ancient-black);
+      box-shadow: 0 0 30px rgba(155,48,255,0.6);
+    }
+    
+    .cult-btn-acid {
+      border-color: #39ff14;
+      color: #39ff14;
+    }
+    
+    .cult-btn-acid:hover {
+      background: #39ff14;
+      color: var(--ancient-black);
+      box-shadow: 0 0 30px rgba(57,255,20,0.6);
+    }
+    
+    /* Section Styles */
+    section {
+      min-height: 100vh;
+      padding: 120px 20px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    /* Ancient Border */
+    .ancient-border {
+      border: 1px solid rgba(155,48,255,0.4);
+      background: rgba(10,9,8,0.85);
+      position: relative;
+    }
+    
+    .ancient-border::before,
+    .ancient-border::after {
+      content: '🧪';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--cult-orange);
+      font-size: 1.5rem;
+      opacity: 0.7;
+    }
+    
+    .ancient-border::before { left: 10px; }
+    .ancient-border::after { right: 10px; }
+    
+    /* Vile decorations */
+    .runic-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      color: rgba(155,48,255,0.5);
+      font-size: 1.5rem;
+    }
+    
+    /* Glow effects - purple neon */
+    .glow-orange {
+      text-shadow: 0 0 10px rgba(155,48,255,0.8), 0 0 20px rgba(155,48,255,0.5), 0 0 40px rgba(155,48,255,0.3);
+    }
+    
+    /* NFT Grid */
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .nft-card {
+      background: rgba(26,22,20,0.9);
+      border: 1px solid rgba(201,162,39,0.3);
+      border-radius: 4px;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+    
+    .nft-card:hover {
+      border-color: var(--cult-orange);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 40px rgba(155,48,255,0.3);
+    }
+    
+    .nft-card .placeholder {
+      aspect-ratio: 1;
+      background: linear-gradient(135deg, #1a1614, #2a2420);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+    
+    /* Wallet button */
+    .wallet-btn {
+      background: linear-gradient(135deg, var(--cult-orange), var(--cult-darkorange));
+      border: 1px solid var(--cult-orange);
+      padding: 14px 28px;
+      font-family: 'Rajdhani', 'Orbitron', sans-serif;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 0.1em;
+    }
+    
+    .wallet-btn:hover {
+      background: var(--cult-orange);
+      color: var(--ancient-black);
+      box-shadow: 0 0 25px rgba(155,48,255,0.6);
+    }
+    
+    /* Gateway Styles */
+    .gateway {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    
+    .gateway.hidden {
+      display: none;
+    }
+    
+    .enter-btn {
+      background: linear-gradient(135deg, var(--ancient-dark), var(--ancient-black));
+      border: 2px solid var(--cult-orange);
+      padding: 20px 50px;
+      font-family: 'Rajdhani', 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      color: var(--cult-orange);
+      cursor: pointer;
+      transition: all 0.4s ease;
+      position: relative;
+    }
+    
+    .enter-btn:hover {
+      transform: scale(1.05);
+    }
+    
+    .enter-btn.mutate {
+      border-color: #39ff14;
+      color: #39ff14;
+    }
+    
+    .enter-btn.mutate:hover {
+      background: #39ff14;
+      color: var(--ancient-black);
+      box-shadow: 0 0 40px rgba(57,255,20,0.6);
+    }
+    
+    .enter-btn.burn {
+      border-color: #ff3300;
+      color: #ff3300;
+    }
+    
+    .enter-btn.burn:hover {
+      background: #ff3300;
+      color: var(--ancient-black);
+      box-shadow: 0 0 40px rgba(57,255,20,0.6);
+    }
+    
+    /* Floating animation */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .float-animation {
+      animation: float 4s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    
+    .pulse-glow {
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fixed Backgrounds -->
+  <div class="fixed-bg"></div>
+  <div class="texture-overlay"></div>
+
+  <!-- STICKY HEADER -->
+  <header class="sticky-header">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <!-- Logo - Always at top -->
+      <div class="flex items-center gap-4">
+        <h1 class="runic-title text-xl md:text-2xl glow-orange">
+          ORDI-MUTANTS
+        </h1>
+      </div>
+      
+      <!-- Navigation -->
+      <nav class="hidden md:flex items-center gap-8">
+        <a href="#about" class="runic-text text-sm tracking-widest hover:text-white transition">About</a>
+        <a href="#community" class="runic-text text-sm tracking-widest hover:text-white transition">Community</a>
+        <a href="#marketplace" class="runic-text text-sm tracking-widest hover:text-white transition">Marketplace</a>
+        <a href="#showcase" class="runic-text text-sm tracking-widest hover:text-white transition">Showcase</a>
+      </nav>
+      
+      <!-- Mobile menu button -->
+      <button id="mobile-menu-btn" class="md:hidden text-2xl" onclick="toggleMobileMenu()">
+        ☰
+      </button>
+    </div>
+    
+    <!-- Mobile Nav -->
+    <div id="mobile-nav" class="hidden md:hidden bg-ancient-dark border-t border-yellow-900/30 p-4">
+      <a href="#about" class="block py-2 ancient-text text-sm">About</a>
+      <a href="#community" class="block py-2 ancient-text text-sm">Community</a>
+      <a href="#marketplace" class="block py-2 ancient-text text-sm">Marketplace</a>
+      <a href="#showcase" class="block py-2 ancient-text text-sm">Showcase</a>
+    </div>
+  </header>
+
+  <!-- GATEWAY / DOORWAY -->
+  <div id="gateway" class="gateway">
+    <div class="text-center max-w-4xl mx-auto px-4">
+      <div class="float-animation mb-6">
+        <h1 class="runic-title text-5xl md:text-7xl lg:text-8xl glow-orange">
+          ORDI-MUTANTS
+        </h1>
+      </div>
+      
+      <p class="text-lg md:text-xl text-orange-400/70 mb-4 tracking-widest ancient-text">
+        INSCRIBED ON RARE SATOSHIS
+      </p>
+      
+      <div class="runic-divider my-8">
+        <span>🧪</span><span>🧪</span><span>🧪</span>
+      </div>
+      
+      <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
+        <button onclick="enterSite('mutate')" class="enter-btn mutate">
+          🧪 MUTATE
+        </button>
+        <button onclick="enterSite('burn')" class="enter-btn burn">
+          🔥 BURN
+        </button>
+      </div>
+      
+      <p class="mt-12 text-yellow-700/50 text-sm ancient-text tracking-widest">
+        ⚔ CHOOSE YOUR FATE ⚔
+      </p>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="main-content" class="hidden">
+    
+    <!-- ABOUT SECTION -->
+    <section id="about">
+      <div class="max-w-4xl mx-auto w-full">
+        <div class="text-center mb-12">
+          <div class="runic-divider justify-center mb-6">
+            <span>᛫</span><span>᛫</span><span>᛫</span>
+          </div>
+          <h2 class="runic-title text-4xl md:text-5xl glow-orange mb-4">ABOUT</h2>
+          <div class="runic-divider justify-center">
+            <span>᛫</span><span>᛫</span><span>᛫</span>
+          </div>
+        </div>
+        
+        <div class="ancient-border rounded-lg p-8 md:p-12">
+          <h3 class="ancient-text text-2xl text-white mb-4 text-center">THE COLLECTION</h3>
+          <p class="text-orange-200/80 leading-relaxed text-lg mb-8 text-center max-w-2xl mx-auto">
+            Ordi Mutants is an ancient collection inscribed upon the sacred Rare Satoshis — the most elusive and powerful units of Bitcoin. Each mutant bears unique traits forged through the mutation process, permanently etched into the blockchain's eternal ledger.
+          </p>
+          
+          <h3 class="ancient-text text-2xl text-white mb-4 text-center">THE FOUNDER & CRAFTSMEN</h3>
+          <p class="text-orange-200/80 leading-relaxed text-lg mb-8 text-center max-w-2xl mx-auto">
+            Conceived by ancient order of Bitcoin maximalists and digital artisans. We are the guardians of ordinal theory, inscribing our creations into the bedrock of digital permanence.
+          </p>
+          
+          <h3 class="ancient-text text-2xl text-white mb-4 text-center">BITCOIN & THE RARE Satoshis</h3>
+          <p class="text-orange-200/80 leading-relaxed text-lg text-center max-w-2xl mx-auto">
+            While mortals trade common sats, the Rare Satoshis from the first blocks hold power beyond measure. Our mutants live forever — inscribed in blood, bound to the chain.
+          </p>
+        </div>
+        
+        <!-- Stats -->
+        <div class="grid grid-cols-3 gap-4 mt-8">
+          <div class="ancient-border rounded-lg p-6 text-center">
+            <div class="runic-text text-3xl md:text-4xl glow-orange">1,000</div>
+            <div class="ancient-text text-xs tracking-widest mt-2 text-orange-500/60">SACRED SUPPLY</div>
+          </div>
+          <div class="ancient-border rounded-lg p-6 text-center">
+            <div class="runic-text text-3xl md:text-4xl glow-orange">100%</div>
+            <div class="ancient-text text-xs tracking-widest mt-2 text-orange-500/60">RARE SATS</div>
+          </div>
+          <div class="ancient-border rounded-lg p-6 text-center">
+            <div class="runic-text text-3xl md:text-4xl">∞</div>
+            <div class="ancient-text text-xs tracking-widest mt-2 text-orange-500/60">ETERNAL</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMMUNITY SECTION -->
+    <section id="community">
+      <div class="max-w-5xl mx-auto w-full">
+        <div class="text-center mb-12">
+          <div class="runic-divider justify-center mb-6">
+            <span>🧪</span><span>🧪</span><span>🧪</span>
+          </div>
+          <h2 class="runic-title text-4xl md:text-5xl glow-orange mb-4">COMMUNITY</h2>
+          <div class="runic-divider justify-center">
+            <span>🧪</span><span>🧪</span><span>🧪</span>
+          </div>
+        </div>
+        
+        <!-- Spaces -->
+        <div class="ancient-border rounded-lg p-8 mb-8">
+          <h3 class="runic-title text-2xl glow-orange mb-6 text-center">SPACES</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-ancient-dark/50 rounded-lg p-4 text-center border border-orange-900/30">
+              <div class="text-3xl mb-2">📡</div>
+              <div class="text-orange-400 font-bold">X / Twitter</div>
+              <div class="text-orange-600/60 text-sm">@ordimutants</div>
+            </div>
+            <div class="bg-ancient-dark/50 rounded-lg p-4 text-center border border-orange-900/30">
+              <div class="text-3xl mb-2">💬</div>
+              <div class="text-orange-400 font-bold">Discord</div>
+              <div class="text-orange-600/60 text-sm">Join the cult</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- IRL Events -->
+        <div class="ancient-border rounded-lg p-8 mb-8">
+          <h3 class="runic-title text-2xl glow-orange mb-6 text-center">IRL EVENTS</h3>
+          <div class="space-y-4">
+            <div class="bg-ancient-dark/50 rounded-lg p-4 border border-orange-900/30 flex justify-between items-center">
+              <div>
+                <div class="text-orange-400 font-bold">Bitcoin Nashville 2026</div>
+                <div class="text-orange-600/60 text-sm">June 2026 • Nashville, TN</div>
+              </div>
+              <div class="text-orange-500">📍</div>
+            </div>
+            <div class="bg-ancient-dark/50 rounded-lg p-4 border border-orange-900/30 flex justify-between items-center">
+              <div>
+                <div class="text-orange-400 font-bold">Ordinals Summit</div>
+                <div class="text-orange-600/60 text-sm">TBD • TBD</div>
+              </div>
+              <div class="text-orange-500">📍</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Merch -->
+        <div class="ancient-border rounded-lg p-8">
+          <h3 class="runic-title text-2xl glow-orange mb-6 text-center">MERCH</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-ancient-dark/50 rounded-lg p-4 text-center border border-orange-900/30">
+              <div class="aspect-square bg-gradient-to-br from-orange-900/30 to-orange-800/10 rounded mb-3 flex items-center justify-center text-3xl">👕</div>
+              <div class="text-orange-400 font-bold">T-Shirt</div>
+              <div class="text-orange-600/60 text-sm">$25</div>
+            </div>
+            <div class="bg-ancient-dark/50 rounded-lg p-4 text-center border border-orange-900/30">
+              <div class="aspect-square bg-gradient-to-br from-orange-900/30 to-orange-800/10 rounded mb-3 flex items-center justify-center text-3xl">🧢</div>
+              <div class="text-orange-400 font-bold">Cap</div>
+              <div class="text-orange-600/60 text-sm">$30</div>
+            </div>
+            <div class="bg-ancient-dark/50 rounded-lg p-4 text-center border border-orange-900/30">
+              <div class="aspect-square bg-gradient-to-br from-orange-900/30 to-orange-800/10 rounded mb-3 flex items-center justify-center text-3xl">👕</div>
+              <div class="text-orange-400 font-bold">Hoodie</div>
+              <div class="text-orange-600/60 text-sm">$55</div>
+            </div>
+            <div class="bg-ancient-dark/50 rounded-lg p-4 text-center border border-orange-900/30">
+              <div class="aspect-square bg-gradient-to-br from-orange-900/30 to-orange-800/10 rounded mb-3 flex items-center justify-center text-3xl">🧪</div>
+              <div class="text-orange-400 font-bold">Sticker Pack</div>
+              <div class="text-orange-600/60 text-sm">$10</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARKETPLACE SECTION -->
+    <section id="marketplace">
+      <div class="max-w-5xl mx-auto w-full">
+        <div class="text-center mb-12">
+          <div class="runic-divider justify-center mb-6">
+            <span>᛫</span><span>᛫</span><span>᛫</span>
+          </div>
+          <h2 class="runic-title text-4xl md:text-5xl glow-orange mb-4">MARKETPLACE</h2>
+          <div class="runic-divider justify-center">
+            <span>᛫</span><span>᛫</span><span>᛫</span>
+          </div>
+        </div>
+        
+        <div class="ancient-border rounded-lg p-8 md:p-12">
+          <p class="text-orange-200/80 text-center mb-8 text-lg">
+            Acquire and trade Ordi Mutants through the ancient marketplaces of the realm.
+          </p>
+          
+          <div class="flex flex-col md:flex-row gap-4 justify-center mb-10">
+            <a href="https://ord-dropz.xyz/secondary/collections/ordimutants" target="_blank" class="cult-btn px-8 py-4 rounded text-center ancient-text tracking-widest">
+              ENTER ORD DROPZ
+            </a>
+            <a href="https://ordinalsbot.com" target="_blank" class="cult-btn cult-btn-acid px-8 py-4 rounded text-center ancient-text tracking-widest">
+              INSCRIBE NEW
+            </a>
+          </div>
+          
+          <!-- Featured -->
+          <div class="mt-10">
+            <h3 class="ancient-text text-center text-xl mb-6 tracking-widest">FEATURED OFFERINGS</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="bg-ancient-dark/50 rounded p-4 text-center border border-orange-900/30">
+                <div class="aspect-square bg-gradient-to-br from-orange-900/30 to-orange-800/10 rounded mb-3 flex items-center justify-center overflow-hidden">
+                  <img src="background.jpg" alt="Ordi Mutant" class="w-full h-full object-cover opacity-80" />
+                </div>
+                <div class="text-orange-400 font-bold">#042</div>
+                <div class="text-orange-600/60 text-sm">0.05 BTC</div>
+              </div>
+              <div class="bg-ancient-dark/50 rounded p-4 text-center border border-orange-900/30">
+                <div class="aspect-square bg-gradient-to-br from-orange-900/30 to-orange-800/10 rounded mb-3 flex items-center justify-center overflow-hidden">
+                  <img src="background.jpg" alt="Ordi Mutant" class="w-full h-full object-cover opacity-80" />
+                </div>
+                <div class="text-orange-400 font-bold">#087</div>
+                <div class="text-orange-600/60 text-sm">0.08 BTC</div>
+              </div>
+              <div class="bg-ancient-dark/50 rounded p-4 text-center border border-orange-900/30">
+                <div class="aspect-square bg-gradient-to-br from-orange-900/30 to-orange-800/10 rounded mb-3 flex items-center justify-center overflow-hidden">
+                  <img src="background.jpg" alt="Ordi Mutant" class="w-full h-full object-cover opacity-80" />
+                </div>
+                <div class="text-orange-400 font-bold">#123</div>
+                <div class="text-orange-600/60 text-sm">0.06 BTC</div>
+              </div>
+              <div class="bg-ancient-dark/50 rounded p-4 text-center border border-orange-900/30">
+                <div class="aspect-square bg-gradient-to-br from-orange-900/30 to-orange-800/10 rounded mb-3 flex items-center justify-center overflow-hidden">
+                  <img src="background.jpg" alt="Ordi Mutant" class="w-full h-full object-cover opacity-80" />
+                </div>
+                <div class="text-orange-400 font-bold">#256</div>
+                <div class="text-orange-600/60 text-sm">0.12 BTC</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHOWCASE SECTION -->
+    <section id="showcase">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="text-center mb-12">
+          <div class="runic-divider justify-center mb-6">
+            <span>᛫</span><span>᛫</span><span>᛫</span>
+          </div>
+          <h2 class="runic-title text-4xl md:text-5xl glow-orange mb-4">SHOWCASE</h2>
+          <div class="runic-divider justify-center">
+            <span>᛫</span><span>᛫</span><span>᛫</span>
+          </div>
+        </div>
+        
+        <!-- Wallet Connection Prompt -->
+        <div id="wallet-prompt" class="ancient-border rounded-lg p-12 text-center">
+          <div class="text-6xl mb-6">⚔</div>
+          <h3 class="runic-text text-2xl mb-4">CONNECT YOUR WALLET</h3>
+          <p class="text-orange-300/60 mb-8 max-w-md mx-auto">
+            Reveal your mutants. Connect your Xverse wallet to display your sacred collection.
+          </p>
+          <button onclick="connectWallet()" class="wallet-btn rounded">
+            CONNECT XVENSE
+          </button>
+        </div>
+        
+        <!-- Connected Wallet Display -->
+        <div id="wallet-display" class="hidden">
+          <div class="flex justify-between items-center mb-8">
+            <div>
+              <span class="text-yellow-700/60 ancient-text text-sm tracking-widest">CONNECTED:</span>
+              <span id="wallet-address" class="text-orange-400 font-mono ml-2"></span>
+            </div>
+            <button onclick="disconnectWallet()" class="text-yellow-700/60 hover:text-white text-sm ancient-text tracking-widest">
+              [DISCONNECT]
+            </button>
+          </div>
+          
+          <div id="nft-showcase" class="showcase-grid">
+            <!-- NFTs populated here -->
+          </div>
+          
+          <div id="no-mutants" class="hidden text-center py-16">
+            <div class="text-6xl mb-4">🧪</div>
+            <p class="text-orange-300/60 mb-4">No mutants found in your vault.</p>
+            <a href="#marketplace" class="text-orange-400 hover:text-white ancient-text tracking-widest">
+              [ SEEK YOUR MUTANT ] →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-10 border-t border-yellow-900/30 mt-20">
+      <div class="max-w-7xl mx-auto px-4 text-center">
+        <div class="runic-divider justify-center mb-6">
+          <span>᛫</span><span>᛫</span><span>᛫</span>
+        </div>
+        <p class="text-yellow-700/50 ancient-text tracking-widest text-sm">
+          © 2026 ORDI MUTANTS — INSCRIBED IN BLOOD, BOUND TO THE CHAIN
+        </p>
+        <p class="text-yellow-800/30 text-xs mt-2">
+          🧪 🧪 🧪
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    let walletConnected = false;
+    
+    function enterSite(choice) {
+      if (choice === 'burn') {
+        // Reject burn - show error or redirect
+        document.getElementById('gateway').innerHTML = `
+          <div class="text-center">
+            <div class="text-6xl mb-6">🔥</div>
+            <h2 class="runic-title text-4xl glow-orange mb-4">ACCESS DENIED</h2>
+            <p class="text-orange-300 mb-8">Only the mutated may enter.</p>
+            <button onclick="location.reload()" class="enter-btn mutate">
+              🧪 TRY AGAIN
+            </button>
+          </div>
+        `;
+        return;
+      }
+      // Only mutate allows entry
+      document.getElementById('gateway').classList.add('hidden');
+      document.getElementById('main-content').classList.remove('hidden');
+    }
+    
+    function toggleMobileMenu() {
+      const nav = document.getElementById('mobile-nav');
+      nav.classList.toggle('hidden');
+    }
+    
+    function connectWallet() {
+      const addresses = [
+        'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+        'bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+      ];
+      
+      const randomAddress = addresses[Math.floor(Math.random() * addresses.length)];
+      const displayAddress = randomAddress.slice(0, 8) + '...' + randomAddress.slice(-6);
+      
+      walletConnected = true;
+      
+      document.getElementById('wallet-prompt').classList.add('hidden');
+      document.getElementById('wallet-display').classList.remove('hidden');
+      document.getElementById('wallet-address').textContent = displayAddress;
+      
+      displayMutants();
+    }
+    
+    function disconnectWallet() {
+      walletConnected = false;
+      
+      document.getElementById('wallet-prompt').classList.remove('hidden');
+      document.getElementById('wallet-display').classList.add('hidden');
+    }
+    
+    // Satribute rarity order (rarest first)
+    const SATURATE_RARITY = {
+      'Block 9 450x': 1,
+      'Alpha': 2,
+      'Omega': 3,
+      'Paliblock Palindrome': 4,
+      'Palindrome': 5,
+      'Block 666': 6,
+      'Block 286': 7,
+      'Block 78': 8,
+      'Block 9': 9,
+      'First Transaction': 10,
+      'Nakamoto': 11,
+      'Pizza': 12,
+      'Hitman': 13,
+      'Silk Road': 14,
+      'JPEG': 15,
+      'Vintage': 16,
+      'Black Uncommon': 17,
+      'Uncommon': 18,
+      'Common': 19
+    };
+    
+    // Load satributes data
+    let satributesData = {};
+    fetch('data/satributes.json')
+      .then(res => res.json())
+      .then(data => {
+        data.forEach(m => {
+          // Extract mutant number from name like "ORDIMUTANT OG#0" or "ORDIMUTANT #123"
+          const match = m.name.match(/#(\d+)/);
+          if (match) {
+            satributesData[parseInt(match[1])] = m.satribute;
+          }
+        });
+        console.log('Loaded satributes for', Object.keys(satributesData).length, 'mutants');
+      })
+      .catch(e => console.error('Failed to load satributes:', e));
+    
+    function displayMutants() {
+      const grid = document.getElementById('nft-showcase');
+      const noMutants = document.getElementById('no-mutants');
+      
+      const mockMutants = [
+        { id: '#042', traits: 'ANCIENT', satribute: 'Vintage' },
+        { id: '#087', traits: 'LEGENDARY', satribute: 'Pizza' },
+        { id: '#156', traits: 'COMMON', satribute: 'Common' },
+        { id: '#203', traits: 'RARE', satribute: 'Silk Road' },
+        { id: '#341', traits: 'ANCIENT', satribute: 'Block 9' },
+        { id: '#412', traits: 'COMMON', satribute: 'Common' },
+      ];
+      
+      // Get satribute badge HTML
+      function getSatributeBadges(mutantNum) {
+        const sat = satributesData[mutantNum];
+        if (!sat) return '';
+        
+        // Sort by rarity (rarest first)
+        const satributes = Array.isArray(sat) ? sat : [sat];
+        satributes.sort((a, b) => (SATURATE_RARITY[a] || 99) - (SATURATE_RARITY[b] || 99));
+        
+        return satributes.map(s => 
+          `<span class="text-xs mt-1 mr-1 inline-block px-2 py-0.5 rounded bg-orange-900/40 text-orange-400 border border-orange-700/40">${s}</span>`
+        ).join('');
+      }
+      
+      if (mockMutants.length === 0) {
+        grid.innerHTML = '';
+        noMutants.classList.remove('hidden');
+        return;
+      }
+      
+      noMutants.classList.add('hidden');
+      grid.innerHTML = mockMutants.map(m => {
+        // Extract number from id like "#042"
+        const num = parseInt(m.id.replace('#', ''));
+        const satBadges = getSatributeBadges(num);
+        
+        return `
+        <div class="nft-card">
+          <div class="placeholder">🧪</div>
+          <div class="p-4 text-center">
+            <div class="text-orange-400 font-bold ancient-text">ORDI MUTANT ${m.id}</div>
+            <div class="text-yellow-700/60 text-xs tracking-widest ancient-text">${m.traits}</div>
+            ${satBadges}
+          </div>
+        </div>
+      `}).join('');
+    }
+  </script>
+</body>
+</html>
