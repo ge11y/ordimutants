@@ -739,16 +739,20 @@
       'Common': 19
     };
     
-    // Load satributes data
+    // Load satributes data (new format: keyed by inscription ID)
     let satributesData = {};
+    let satData = {}; // For sat number
     fetch('data/satributes.json')
       .then(res => res.json())
       .then(data => {
-        data.forEach(m => {
-          // Extract mutant number from name like "ORDIMUTANT OG#0" or "ORDIMUTANT #123"
-          const match = m.name.match(/#(\d+)/);
+        // New format: { inscriptionId: { satributes: [...], sat: number, name: "ORDIMUTANT #123" } }
+        Object.entries(data).forEach(([insId, info]) => {
+          // Extract mutant number from name like "ORDIMUTANT #2970"
+          const match = info.name && info.name.match(/#(\d+)/);
           if (match) {
-            satributesData[parseInt(match[1])] = m.satribute;
+            const mutantNum = parseInt(match[1]);
+            satributesData[mutantNum] = info.satributes || [];
+            satData[mutantNum] = info.sat;
           }
         });
         console.log('Loaded satributes for', Object.keys(satributesData).length, 'mutants');
@@ -759,52 +763,80 @@
       const grid = document.getElementById('nft-showcase');
       const noMutants = document.getElementById('no-mutants');
       
-      const mockMutants = [
-        { id: '#042', traits: 'ANCIENT', satribute: 'Vintage' },
-        { id: '#087', traits: 'LEGENDARY', satribute: 'Pizza' },
-        { id: '#156', traits: 'COMMON', satribute: 'Common' },
-        { id: '#203', traits: 'RARE', satribute: 'Silk Road' },
-        { id: '#341', traits: 'ANCIENT', satribute: 'Block 9' },
-        { id: '#412', traits: 'COMMON', satribute: 'Common' },
-      ];
+      // Load actual mutants from metadata.json
+      let actualMutants = [];
+      fetch('data/metadata.json')
+        .then(res => res.json())
+        .then(data => {
+          actualMutants = data.map(m => {
+            const match = m.meta.name.match(/#(\d+)/);
+            const num = match ? parseInt(match[1]) : 0;
+            return {
+              id: '#' + num,
+              name: m.meta.name,
+              traits: m.meta.attributes?.find(a => a.trait_type === 'DNA')?.value || 'UNKNOWN',
+              mutantNum: num
+            };
+          });
+          console.log('Loaded', actualMutants.length, 'mutants from metadata');
+          renderMutants(actualMutants);
+        })
+        .catch(e => {
+          console.error('Failed to load metadata:', e);
+          renderMutants([]);
+        });
+      
+      function renderMutants(mutants) {
+        if (mutants.length === 0) {
+          grid.innerHTML = '';
+          noMutants.classList.remove('hidden');
+          return;
+        }
+
+        noMutants.classList.add('hidden');
+        grid.innerHTML = mutants.map(m => {
       
       // Get satribute badge HTML
       function getSatributeBadges(mutantNum) {
-        const sat = satributesData[mutantNum];
-        if (!sat) return '';
+        const satributes = satributesData[mutantNum];
+        if (!satributes || satributes.length === 0) return '';
         
         // Sort by rarity (rarest first)
-        const satributes = Array.isArray(sat) ? sat : [sat];
-        satributes.sort((a, b) => (SATURATE_RARITY[a] || 99) - (SATURATE_RARITY[b] || 99));
+        const sorted = [...satributes].sort((a, b) => (SATURATE_RARITY[a] || 99) - (SATURATE_RARITY[b] || 99));
         
-        return satributes.map(s => 
+        // Also get sat number if available
+        const satNum = satData[mutantNum];
+        const satNumDisplay = satNum ? `<span class="text-xs mt-1 mr-1 inline-block px-2 py-0.5 rounded bg-blue-900/40 text-blue-400 border border-blue-700/40">sat: ${satNum}</span>` : '';
+        
+        return satNumDisplay + sorted.map(s => 
           `<span class="text-xs mt-1 mr-1 inline-block px-2 py-0.5 rounded bg-orange-900/40 text-orange-400 border border-orange-700/40">${s}</span>`
         ).join('');
       }
       
-      if (mockMutants.length === 0) {
-        grid.innerHTML = '';
-        noMutants.classList.remove('hidden');
-        return;
-      }
-      
-      noMutants.classList.add('hidden');
-      grid.innerHTML = mockMutants.map(m => {
-        // Extract number from id like "#042"
-        const num = parseInt(m.id.replace('#', ''));
-        const satBadges = getSatributeBadges(num);
-        
-        return `
-        <div class="nft-card">
-          <div class="placeholder">🧪</div>
-          <div class="p-4 text-center">
-            <div class="text-orange-400 font-bold ancient-text">ORDI MUTANT ${m.id}</div>
-            <div class="text-yellow-700/60 text-xs tracking-widest ancient-text">${m.traits}</div>
-            ${satBadges}
+      function renderMutants(mutants) {
+        if (mutants.length === 0) {
+          grid.innerHTML = '';
+          noMutants.classList.remove('hidden');
+          return;
+        }
+
+        noMutants.classList.add('hidden');
+        grid.innerHTML = mutants.map(m => {
+          // Use mutantNum if available, otherwise extract from id
+          const num = m.mutantNum !== undefined ? m.mutantNum : parseInt(m.id.replace('#', ''));
+          const satBadges = getSatributeBadges(num);
+          
+          return `
+          <div class="nft-card">
+            <div class="placeholder">🧪</div>
+            <div class="p-4 text-center">
+              <div class="text-orange-400 font-bold ancient-text">ORDI MUTANT ${m.id}</div>
+              <div class="text-yellow-700/60 text-xs tracking-widest ancient-text">${m.traits}</div>
+              ${satBadges}
+            </div>
           </div>
-        </div>
-      `}).join('');
+        `}).join('');
+      }
     }
-  </script>
 </body>
 </html>
